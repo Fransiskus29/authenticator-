@@ -19,13 +19,13 @@ function updateToggleIcon(isDark) {
     });
 }
 
-// ponytail: global scope for inline onclick handlers
 window.initTheme = initTheme;
 window.toggleTheme = toggleTheme;
 
-// Run immediately to prevent flash
 initTheme();
+updateToggleIcon(document.documentElement.classList.contains('dark'));
 
-document.addEventListener('DOMContentLoaded', () => {
+// Livewire wire:navigate doesn't fire DOMContentLoaded, so update on navigate
+document.addEventListener('livewire:navigated', () => {
     updateToggleIcon(document.documentElement.classList.contains('dark'));
 });
