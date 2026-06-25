@@ -8,6 +8,14 @@
 
     <title>{{ config('app.name', 'SecureAuth') }}</title>
 
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme');
+            var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
+            if (d) document.documentElement.classList.add('dark');
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -18,6 +26,9 @@
     <style>
         .hero-gradient {
             background: linear-gradient(135deg, #e2dfff 0%, #f8f9ff 50%, #d3e4fe 100%);
+        }
+        .dark .hero-gradient {
+            background: linear-gradient(135deg, #1a1535 0%, #0f1115 50%, #151a25 100%);
         }
         @media (prefers-reduced-motion: reduce) {
             .fade-up { opacity: 1 !important; transform: none !important; }
@@ -34,6 +45,9 @@
                 <span class="font-sans text-headline-md font-bold text-primary tracking-tight">SecureAuth</span>
             </a>
             <div class="flex items-center gap-sm">
+                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
                 @if (Route::has('login'))
                     <a href="{{ route('login') }}" wire:navigate class="text-label-sm text-on-surface-variant hover:text-primary transition-colors px-sm py-2">Log in</a>
                 @endif

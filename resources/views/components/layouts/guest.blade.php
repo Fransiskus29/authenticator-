@@ -8,6 +8,14 @@
 
     <title>{{ config('app.name', 'SecureAuth') }}</title>
 
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme');
+            var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
+            if (d) document.documentElement.classList.add('dark');
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -17,6 +25,12 @@
 </head>
 <body class="bg-background text-on-background font-sans text-body-md min-h-screen antialiased">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+        <div class="absolute top-4 right-4">
+            <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                <span class="material-symbols-outlined">dark_mode</span>
+            </button>
+        </div>
+
         <div class="flex items-center gap-xs mb-6">
             <span class="material-symbols-outlined text-primary text-[40px] font-bold" style="font-variation-settings: 'FILL' 1;">shield</span>
             <div>

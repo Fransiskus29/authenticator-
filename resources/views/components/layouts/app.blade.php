@@ -8,6 +8,14 @@
 
     <title>{{ config('app.name', 'SecureAuth') }}</title>
 
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme');
+            var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
+            if (d) document.documentElement.classList.add('dark');
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -69,6 +77,9 @@
                 <h2 class="text-headline-md text-primary font-bold md:hidden">SecureAuth</h2>
             </div>
             <div class="flex items-center gap-xs">
+                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
                 <div class="relative focus-within:ring-2 focus-within:ring-primary rounded-full hidden lg:block">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
                     <input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-label-sm text-on-surface focus:outline-none w-64 placeholder-on-surface-variant" placeholder="Search accounts..." type="text"/>
