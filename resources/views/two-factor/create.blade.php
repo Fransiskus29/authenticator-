@@ -1,190 +1,130 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('two-factor.index') }}" class="btn-ghost p-2 -ml-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </a>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Add Account</h1>
+    <header class="mb-lg">
+        <h2 class="text-headline-lg text-on-surface mb-base">Add New Account</h2>
+        <p class="text-on-surface-variant">Securely connect a new service to generate one-time passwords.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+        {{-- Section 1: Scan QR Code --}}
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md flex flex-col hover:border-primary hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-200">
+            <div class="flex items-center gap-xs mb-sm text-primary">
+                <span class="material-symbols-outlined">qr_code_scanner</span>
+                <h3 class="text-[16px] font-bold">Scan QR Code</h3>
+            </div>
+            <p class="text-label-sm text-on-surface-variant mb-md">Point your camera at the QR code provided by the service to automatically configure your account.</p>
+
+            <div class="relative w-full aspect-square bg-surface-container border-2 border-dashed border-outline-variant rounded-lg flex items-center justify-center overflow-hidden group cursor-pointer mt-auto" id="scanner-container">
+                <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <video id="scanner-video" class="w-full h-full object-cover hidden" autoplay playsinline></video>
+                <div class="absolute left-0 right-0 h-[2px] bg-primary/50 top-1/4 animate-[scan_3s_ease-in-out_infinite] scan-line pointer-events-none"></div>
+                <div class="text-center z-10 relative" id="scanner-placeholder">
+                    <span class="material-symbols-outlined text-[48px] text-outline mb-xs block group-hover:text-primary transition-colors">photo_camera</span>
+                    <span class="text-label-sm text-outline group-hover:text-primary transition-colors">Tap to activate camera</span>
+                </div>
+                <div class="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-primary rounded-tl-sm"></div>
+                <div class="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-primary rounded-tr-sm"></div>
+                <div class="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-primary rounded-bl-sm"></div>
+                <div class="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-primary rounded-br-sm"></div>
+                <div id="scanner-overlay" class="absolute inset-0 bg-on-surface/70 backdrop-blur-sm flex items-center justify-center hidden z-20">
+                    <div class="text-center">
+                        <span class="material-symbols-outlined text-[48px] text-secondary-fixed mb-xs block">check_circle</span>
+                        <p class="text-label-sm text-secondary-fixed font-medium">QR Code Detected!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-sm mt-sm">
+                <button onclick="startScanner()" id="start-scan-btn"
+                        class="flex-1 bg-primary text-on-primary text-label-sm font-label-sm py-2 rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-xs">
+                    <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                    Start Camera
+                </button>
+                <button onclick="stopScanner()" id="stop-scan-btn"
+                        class="flex-1 py-2 text-label-sm font-label-sm text-on-surface-variant bg-surface-container-low border border-outline-variant rounded-lg hover:bg-surface-container transition-colors hidden">
+                    Stop Camera
+                </button>
+            </div>
         </div>
-    </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8">
-
-            {{-- Tabs --}}
-            <div class="glass rounded-2xl p-1.5 flex gap-1 mb-6">
-                <button onclick="switchTab('manual')" id="tab-manual"
-                        class="tab-btn flex-1 py-3 text-sm font-semibold rounded-xl transition-all duration-300 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-indigo-500/20">
-                    <div class="flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                        Manual Entry
-                    </div>
-                </button>
-                <button onclick="switchTab('scan')" id="tab-scan"
-                        class="tab-btn flex-1 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-gray-500 hover:text-gray-300">
-                    <div class="flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-                        </svg>
-                        Scan QR Code
-                    </div>
-                </button>
+        {{-- Section 2: Manual Entry --}}
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md flex flex-col hover:border-primary hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-200">
+            <div class="flex items-center gap-xs mb-sm text-primary">
+                <span class="material-symbols-outlined">keyboard</span>
+                <h3 class="text-[16px] font-bold">Manual Entry</h3>
             </div>
+            <p class="text-label-sm text-on-surface-variant mb-md">Enter the details provided by the service manually if you cannot scan a QR code.</p>
 
-            {{-- Manual Entry Tab --}}
-            <div id="panel-manual" class="animate-fade-in">
-                <div class="glass rounded-3xl p-6">
-                    <div class="mb-6">
-                        <h2 class="text-lg font-bold text-white mb-1">Manual Setup</h2>
-                        <p class="text-sm text-gray-500">Enter your account details and secret key from your service</p>
-                    </div>
+            <form action="{{ route('two-factor.store') }}" method="POST" class="flex flex-col gap-sm flex-1">
+                @csrf
+                <div>
+                    <label class="block text-on-surface mb-base text-label-sm font-label-sm" for="account_name">Account Name</label>
+                    <input type="text" name="label" id="account_name" value="{{ old('label') }}" required
+                           placeholder="e.g., My Bank, GitHub"
+                           class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-sm py-2 text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                           autofocus>
+                    @error('label') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
 
-                    <form action="{{ route('two-factor.store') }}" method="POST" class="space-y-5">
-                        @csrf
-
-                        <div class="space-y-1.5">
-                            <label class="label-dark">Account Name <span class="text-rose-400">*</span></label>
-                            <input type="text" name="label" value="{{ old('label') }}" required
-                                   placeholder="e.g. john@gmail.com"
-                                   class="input-dark" autofocus>
-                            @error('label')
-                                <p class="text-rose-400 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label class="label-dark">Issuer</label>
-                            <input type="text" name="issuer" value="{{ old('issuer') }}"
-                                   placeholder="e.g. Google, GitHub, Discord"
-                                   class="input-dark">
-                            @error('issuer')
-                                <p class="text-rose-400 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <label class="label-dark">Secret Key <span class="text-gray-600 font-normal normal-case">(optional)</span></label>
-                            <input type="text" name="secret" value="{{ old('secret') }}"
-                                   placeholder="Paste secret from your service"
-                                   class="input-dark font-mono text-xs tracking-wider"
-                                   maxlength="64">
-                            <p class="text-[11px] text-gray-600">Paste the secret key from your service. Leave empty to generate a new one.</p>
-                            @error('secret')
-                                <p class="text-rose-400 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn-primary w-full py-3 text-base flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Save Account
+                <div>
+                    <label class="block text-on-surface mb-base text-label-sm font-label-sm" for="secret_key">Secret Key</label>
+                    <div class="relative">
+                        <input type="text" name="secret" id="secret_key" value="{{ old('secret') }}"
+                               placeholder="Enter base32 key"
+                               class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-sm pr-10 py-2 font-mono text-code-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all uppercase tracking-wider"
+                               maxlength="64">
+                        <button type="button" onclick="pasteFromClipboard()"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">content_paste</span>
                         </button>
-                    </form>
-                </div>
-            </div>
-
-            {{-- QR Scan Tab --}}
-            <div id="panel-scan" class="hidden animate-fade-in">
-                <div class="glass rounded-3xl p-6">
-                    <div class="mb-6 text-center">
-                        <h2 class="text-lg font-bold text-white mb-1">Scan QR Code</h2>
-                        <p class="text-sm text-gray-500">Point your camera at the QR code</p>
                     </div>
-
-                    <div class="relative rounded-2xl overflow-hidden bg-black/50 aspect-square mb-5 border border-white/10" id="scanner-container">
-                        <video id="scanner-video" class="w-full h-full object-cover" autoplay playsinline></video>
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div class="w-52 h-52 border-2 border-white/30 rounded-3xl relative">
-                                <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-indigo-400 rounded-tl-xl"></div>
-                                <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-indigo-400 rounded-tr-xl"></div>
-                                <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-indigo-400 rounded-bl-xl"></div>
-                                <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-indigo-400 rounded-br-xl"></div>
-                                <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-400 to-transparent scan-line"></div>
-                            </div>
-                        </div>
-                        <div id="scanner-overlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden">
-                            <div class="text-center">
-                                <div class="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-green-500/30">
-                                    <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-sm text-green-400 font-medium">QR Code Detected!</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button onclick="startScanner()" id="start-scan-btn"
-                            class="btn-primary w-full py-3 flex items-center justify-center gap-2 mb-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                        </svg>
-                        Start Camera
-                    </button>
-                    <button onclick="stopScanner()" id="stop-scan-btn"
-                            class="w-full py-3 text-sm font-medium text-gray-400 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition hidden">
-                        Stop Camera
-                    </button>
-
-                    <p class="text-xs text-gray-600 text-center mt-4">Camera not working? Use Manual Entry tab instead</p>
+                    <p class="text-[11px] text-on-surface-variant mt-1">Spaces are ignored.</p>
+                    @error('secret') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
-            </div>
 
-            <div class="mt-6 text-center">
-                <a href="{{ route('two-factor.index') }}" class="text-sm text-gray-500 hover:text-indigo-400 transition-colors inline-flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to accounts
-                </a>
-            </div>
+                <div>
+                    <label class="block text-on-surface mb-base text-label-sm font-label-sm" for="issuer">Issuer</label>
+                    <input type="text" name="issuer" id="issuer" value="{{ old('issuer') }}"
+                           placeholder="e.g. Google, GitHub, Discord"
+                           class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-sm py-2 text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    @error('issuer') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mt-auto pt-sm flex items-center justify-end gap-sm border-t border-outline-variant">
+                    <a href="{{ route('two-factor.index') }}" wire:navigate
+                       class="text-label-sm text-on-surface-variant hover:text-on-surface px-md py-2 rounded-lg transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="bg-primary text-on-primary text-label-sm font-label-sm px-md py-2 rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center gap-xs">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
+                        Save Account
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <style>
-        .scan-line {
-            animation: scan 2s ease-in-out infinite;
-        }
-        @keyframes scan {
-            0%, 100% { transform: translateY(-60px); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            50% { transform: translateY(60px); }
-        }
-    </style>
+    <div class="mt-lg flex items-center justify-center gap-xs text-on-surface-variant opacity-70">
+        <span class="material-symbols-outlined text-[16px]">lock</span>
+        <span class="text-[12px]">All keys are encrypted locally on this device.</span>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
         let scannerStream = null;
         let scanInterval = null;
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn flex-1 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-gray-500 hover:text-gray-300';
-            });
-            document.getElementById('panel-manual').classList.add('hidden');
-            document.getElementById('panel-scan').classList.add('hidden');
-
-            const selected = document.getElementById('tab-' + tab);
-            selected.className = 'tab-btn flex-1 py-3 text-sm font-semibold rounded-xl transition-all duration-300 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-indigo-500/20';
-            document.getElementById('panel-' + tab).classList.remove('hidden');
-
-            if (tab !== 'scan') stopScanner();
-        }
-
         function startScanner() {
             const video = document.getElementById('scanner-video');
+            const placeholder = document.getElementById('scanner-placeholder');
             navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
             }).then(stream => {
                 scannerStream = stream;
                 video.srcObject = stream;
                 video.play();
+                video.classList.remove('hidden');
+                placeholder.classList.add('hidden');
                 document.getElementById('start-scan-btn').classList.add('hidden');
                 document.getElementById('stop-scan-btn').classList.remove('hidden');
 
@@ -199,12 +139,16 @@
                         if (code && code.data) handleQRCode(code.data);
                     }
                 }, 300);
-            }).catch(() => alert('Camera not available. Use Manual Entry tab.'));
+            }).catch(() => alert('Camera not available. Use Manual Entry instead.'));
         }
 
         function stopScanner() {
             if (scanInterval) clearInterval(scanInterval);
             if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
+            const video = document.getElementById('scanner-video');
+            const placeholder = document.getElementById('scanner-placeholder');
+            video.classList.add('hidden');
+            placeholder.classList.remove('hidden');
             document.getElementById('start-scan-btn').classList.remove('hidden');
             document.getElementById('stop-scan-btn').classList.add('hidden');
         }
@@ -212,6 +156,7 @@
         function handleQRCode(data) {
             stopScanner();
             document.getElementById('scanner-overlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('scanner-overlay').classList.add('hidden'), 1500);
             if (data.startsWith('otpauth://totp/')) {
                 const url = new URL(data);
                 document.querySelector('input[name="label"]').value = decodeURIComponent(url.pathname.replace('/totp/', ''));
@@ -220,7 +165,12 @@
             } else {
                 document.querySelector('input[name="secret"]').value = data;
             }
-            switchTab('manual');
+        }
+
+        function pasteFromClipboard() {
+            navigator.clipboard.readText().then(text => {
+                document.getElementById('secret_key').value = text.toUpperCase().replace(/\s/g, '');
+            }).catch(() => {});
         }
     </script>
 </x-app-layout>

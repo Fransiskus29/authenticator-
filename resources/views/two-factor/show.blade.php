@@ -1,78 +1,66 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('two-factor.index') }}" class="btn-ghost p-2 -ml-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </a>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Setup Complete</h1>
-        </div>
-    </x-slot>
+    <div class="max-w-[800px] mx-auto">
+        <header class="mb-lg">
+            <h2 class="text-headline-lg text-on-surface mb-base">Setup Complete</h2>
+            <p class="text-on-surface-variant">Your account has been added successfully.</p>
+        </header>
 
-    <div class="py-6">
-        <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="glass rounded-3xl p-8 text-center animate-slide-up">
-
-                {{-- Success Badge --}}
-                <div class="w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-green-500/20 glow-green">
-                    <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-
-                <h2 class="text-xl font-bold text-white mb-1">{{ $account->label }}</h2>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md animate-slide-up">
+            <div class="flex items-center gap-sm mb-md">
+                <span class="material-symbols-outlined text-secondary text-[24px]">check_circle</span>
+                <h3 class="text-headline-md text-on-surface">{{ $account->label }}</h3>
                 @if ($account->issuer)
-                    <p class="text-sm text-gray-500 mb-6">{{ $account->issuer }}</p>
-                @else
-                    <div class="mb-6"></div>
+                    <span class="text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">{{ $account->issuer }}</span>
                 @endif
+            </div>
 
-                <p class="text-sm text-gray-400 mb-8">Scan this QR code with your authenticator app or enter the secret key manually</p>
+            <p class="text-body-md text-on-surface-variant mb-md">Scan this QR code with your authenticator app or enter the secret key manually.</p>
 
+            <div class="flex flex-col md:flex-row gap-lg">
                 {{-- QR Code --}}
-                <div class="inline-block p-5 glass rounded-3xl mb-8 animate-pulse-glow">
-                    <img
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&bgcolor=0f0f1a&color=ffffff&data={{ urlencode($qrCodeUrl) }}"
-                        alt="QR Code for {{ $account->label }}"
-                        class="block rounded-xl"
-                    >
-                </div>
-
-                {{-- Secret Key --}}
-                <div class="glass rounded-2xl p-5 mb-8 text-left">
-                    <p class="label-dark mb-3">Secret Key (Manual Entry)</p>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 text-sm font-mono tracking-widest text-indigo-300 select-all bg-black/30 px-4 py-3 rounded-xl border border-white/5 break-all">
-                            {{ $account->secret }}
-                        </code>
-                        <button onclick="copySecret()" class="btn-ghost p-3 flex-shrink-0" title="Copy secret">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                            </svg>
-                        </button>
+                <div class="flex-shrink-0">
+                    <div class="inline-block p-5 bg-surface-container-low border border-outline-variant rounded-xl">
+                        <img
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=f8f9ff&color=0b1c30&data={{ urlencode($qrCodeUrl) }}"
+                            alt="QR Code for {{ $account->label }}"
+                            class="block rounded-lg"
+                        >
                     </div>
                 </div>
 
-                <a href="{{ route('two-factor.index') }}" class="btn-primary w-full py-3 text-base inline-flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+                {{-- Secret Key --}}
+                <div class="flex-1">
+                    <p class="text-on-surface mb-base text-label-sm font-label-sm">Secret Key (Manual Entry)</p>
+                    <div class="bg-surface-container-low border border-outline-variant rounded-lg p-sm mb-sm">
+                        <code class="text-code-sm font-mono tracking-widest text-primary select-all break-all block">
+                            {{ $account->secret }}
+                        </code>
+                    </div>
+                    <button onclick="copySecret()" class="text-primary hover:text-on-primary-fixed-variant text-label-sm font-label-sm flex items-center gap-xs transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                        Copy secret key
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-md pt-md border-t border-outline-variant">
+                <a href="{{ route('two-factor.index') }}" wire:navigate
+                   class="bg-primary text-on-primary text-label-sm font-label-sm px-md py-sm rounded-lg hover:opacity-90 transition-opacity shadow-sm inline-flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-[18px]">check</span>
                     Done
                 </a>
             </div>
         </div>
+
+        <div class="mt-sm flex items-center justify-center gap-xs text-on-surface-variant opacity-70">
+            <span class="material-symbols-outlined text-[16px]">lock</span>
+            <span class="text-[12px]">All keys are encrypted locally on this device.</span>
+        </div>
     </div>
 
-    {{-- Toast --}}
-    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden">
-        <div class="glass rounded-2xl px-5 py-3 flex items-center gap-2.5 glow-indigo border-indigo-500/30">
-            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span id="toast-text" class="text-sm font-medium text-white">Secret copied!</span>
-        </div>
+    <div id="toast" class="fixed bottom-lg right-lg bg-inverse-surface text-inverse-on-surface px-md py-xs rounded-lg shadow-lg flex items-center gap-xs text-label-sm font-label-sm z-50 hidden">
+        <span class="material-symbols-outlined text-secondary-fixed text-[20px]">check_circle</span>
+        <span id="toast-text">Secret copied!</span>
     </div>
 
     <script>

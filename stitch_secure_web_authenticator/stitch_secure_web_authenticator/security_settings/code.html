@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Security Settings - Authenticator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#930013",
+                        "on-surface-variant": "#464555",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed": "#0f0069",
+                        "outline": "#777587",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c7c4d8",
+                        "error-container": "#ffdad6",
+                        "background": "#f8f9ff",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-container": "#00714d",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container": "#e5eeff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#bc1d25",
+                        "secondary": "#006c49",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary-container": "#ffd0cc",
+                        "on-secondary-fixed": "#002113",
+                        "on-tertiary-fixed": "#410004",
+                        "surface-tint": "#4d44e3",
+                        "surface-dim": "#cbdbf5",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "tertiary-fixed": "#ffdad7",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#dad7ff",
+                        "tertiary": "#960014",
+                        "on-background": "#0b1c30",
+                        "secondary-container": "#6cf8bb",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "primary-container": "#4f46e5",
+                        "primary": "#3525cd",
+                        "inverse-primary": "#c3c0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "16px",
+                        "lg": "32px",
+                        "gutter": "20px",
+                        "base": "4px",
+                        "xl": "48px",
+                        "container-max": "1200px",
+                        "xs": "8px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "otp-display": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "code-sm": ["JetBrains Mono"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "otp-display": ["36px", { "lineHeight": "44px", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "code-sm": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen antialiased flex">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface w-[280px] h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline flex flex-col h-full py-md px-sm z-50">
+<div class="flex items-center gap-3 mb-xl">
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="A stylized, minimalist logo for a high-security authenticator application. The logo features a geometric shield interlocked with a sleek, modern keyhole, rendered in sharp, high-contrast indigo and crisp white lines. The style is highly technical, flat, and vector-based, conveying a sense of absolute precision and digital safety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTlAj4AfVVFmb3a9_1xJQxzCgMvnlXRVvVYNMfsI-lFd_q8myhGhUDIeppYHN2dhQXWvxJ4__-71mpvsnudM_8pzq6xJ_53UHyeic9Rb13lfx0pX6j_AyXnP8eWXrZRFsBWj48MuwjVOM6g4_DhNLumpm9Vp5nOfIqLyihEubptIkFlFa1RujWZAxaM0lA6ZfbEAx_pXEXts-CFTxk7iWIpbxDOzkjtAjBN4YU6hk-eq7EM2ppgNWUPIHGNuzfI8ym39ygw05I"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">SecureAuth</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Vigilant &amp; Precise</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 scale-95 active:scale-90 transition-transform rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 scale-95 active:scale-90 transition-transform rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-body-md text-body-md">Add Account</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-xl scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined fill" data-icon="security" data-weight="fill">security</span>
+<span class="font-body-md text-body-md font-bold">Security Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 scale-95 active:scale-90 transition-transform rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="devices">devices</span>
+<span class="font-body-md text-body-md">Devices</span>
+</a>
+</div>
+<button class="mt-auto flex items-center justify-center gap-2 bg-primary-container text-on-primary py-3 px-4 rounded-xl font-label-sm text-label-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+            Add New Account
+        </button>
+</nav>
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface h-16 fixed top-0 right-0 w-[calc(100%-280px)] border-b border-outline-variant dark:border-outline flex justify-between items-center px-md z-40">
+<div class="flex items-center gap-4 focus-within:ring-2 focus-within:ring-primary rounded-lg px-3 py-1 bg-surface-container-low dark:bg-surface-container-highest">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface font-body-md text-body-md placeholder-on-surface-variant w-64" placeholder="Search Authenticator" type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+</button>
+<button class="p-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-primary dark:text-primary-fixed-dim font-bold hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="ml-4 w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a person, framed in a clean circle. The lighting is soft and corporate, conveying trust and reliability. The background is a muted, abstract geometric pattern in light indigo tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsGbt82h2KNvKnWmmg1LUOAemXpRRdvwJOXnFRb4hXceuI9-PZjPNovvSdjuN8s9iSbvmFVWqu0FgKLp0UNtJ4S1ESu44qQc6exJ_sukf7B0ZEoV6Blh8EM2cZ-JqNTTqUUa_q4yKdUI9Zz33flve4YMbdabI0kdRcM1Y7bGzQ6nIj7O2BhAajiDwpjxUdDHxxxcZcjlF5xK0Ah6mHhvUbqvt65Om2R3CAkhD4VcocI8bUDiwFOd8tL08lmyae_bPU-DDpaouu"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] mt-16 p-lg w-full max-w-container-max mx-auto">
+<div class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Security Settings</h2>
+<p class="text-on-surface-variant mt-2 max-w-2xl">Manage your master password, multi-device access, and cloud backups. Maintaining these settings ensures your authenticator codes remain strictly under your control.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Left Column: Primary Security (Master Password & Auto-Lock) -->
+<div class="lg:col-span-7 flex flex-col gap-sm">
+<!-- Master Password Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md hover:border-primary transition-colors duration-200 group relative overflow-hidden shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">password</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Master Password</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                    Password is set
+                                </p>
+</div>
+</div>
+<button class="px-4 py-2 bg-surface-container border border-outline-variant rounded-lg font-label-sm text-label-sm text-on-surface hover:bg-surface-container-high transition-colors">
+                            Change Password
+                        </button>
+</div>
+<div class="bg-surface p-4 rounded-lg border border-outline-variant/50">
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">
+                            Your master password encrypts your vault locally. If you lose it, we cannot recover your accounts.
+                        </p>
+</div>
+</div>
+<!-- Auto-Lock Settings -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md hover:border-primary transition-colors duration-200">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">timer</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold text-on-surface">Auto-Lock Vault</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">
+                                    Require Master Password after inactivity.
+                                </p>
+</div>
+</div>
+<select class="bg-surface border border-outline-variant text-on-surface text-sm rounded-lg focus:ring-primary focus:border-primary block w-32 p-2">
+<option>1 Minute</option>
+<option selected="">5 Minutes</option>
+<option>15 Minutes</option>
+<option>Never</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Right Column: Sync & Devices -->
+<div class="lg:col-span-5 flex flex-col gap-sm">
+<!-- Cloud Sync Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md hover:border-primary transition-colors duration-200 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">cloud_sync</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Cloud Sync</h3>
+</div>
+<div class="space-y-3">
+<p class="font-body-md text-body-md text-on-surface-variant">Backup to Cloud (Encrypted)</p>
+<div class="flex items-center gap-2 text-secondary font-label-sm text-label-sm bg-secondary-container/20 px-3 py-2 rounded-lg border border-secondary-container/50">
+<span class="material-symbols-outlined text-[16px]">sync_saved_locally</span>
+                            Last synced: 2 minutes ago
+                        </div>
+<button class="w-full mt-2 px-4 py-2 text-primary font-label-sm text-label-sm hover:bg-surface-container rounded-lg transition-colors text-left flex justify-between items-center">
+                            Force Sync Now
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Trusted Devices List -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md flex-grow">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">devices</span>
+</div>
+<h3 class="font-body-md text-body-md font-semibold text-on-surface">Trusted Devices</h3>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">laptop_mac</span>
+<div>
+<p class="font-body-md text-body-md text-on-surface text-sm">MacBook Pro 16"</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-xs">Current Session • macOS</p>
+</div>
+</div>
+<span class="text-xs text-secondary bg-secondary-container/30 px-2 py-1 rounded border border-secondary/20">Active</span>
+</li>
+<li class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">smartphone</span>
+<div>
+<p class="font-body-md text-body-md text-on-surface text-sm">iPhone 14 Pro</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-xs">Last active 2 hrs ago • iOS</p>
+</div>
+</div>
+<button class="text-error font-label-sm text-label-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>
+</li>
+<li class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">desktop_windows</span>
+<div>
+<p class="font-body-md text-body-md text-on-surface text-sm">Office Workstation</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-xs">Last active yesterday • Windows</p>
+</div>
+</div>
+<button class="text-error font-label-sm text-label-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+</body></html>

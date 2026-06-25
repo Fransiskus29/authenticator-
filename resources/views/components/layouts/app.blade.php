@@ -16,7 +16,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-on-background font-sans text-body-md min-h-screen antialiased flex">
-    {{-- Sidebar --}}
     @php
         $user = auth()->user();
         $initial = strtoupper(substr($user->name ?? 'U', 0, 1));
@@ -60,9 +59,7 @@
         </div>
     </aside>
 
-    {{-- Main Content --}}
     <div class="flex-1 flex flex-col md:ml-[280px] w-full min-h-screen">
-        {{-- Top Header --}}
         <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] bg-surface border-b border-outline-variant flex justify-between items-center px-md z-10">
             <div class="flex items-center">
                 <button onclick="document.getElementById('mobile-sidebar').classList.toggle('hidden')" class="md:hidden mr-sm text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
@@ -93,7 +90,6 @@
             </div>
         </header>
 
-        {{-- Mobile Sidebar Overlay --}}
         <div id="mobile-sidebar" class="hidden fixed inset-0 z-50 md:hidden">
             <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"></div>
             <aside class="w-[280px] h-full bg-surface border-r border-outline-variant flex flex-col py-md px-sm relative z-10">
@@ -134,7 +130,6 @@
             </aside>
         </div>
 
-        {{-- Main Canvas --}}
         <main class="flex-1 mt-16 p-sm md:p-lg overflow-y-auto bg-surface-bright">
             <div class="max-w-container-max mx-auto">
                 {{ $slot }}
