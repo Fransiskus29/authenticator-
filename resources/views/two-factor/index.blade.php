@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="flex justify-between items-end mb-lg">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-sm mb-lg">
         <div>
             <h2 class="text-headline-lg text-on-surface mb-base">Your Accounts</h2>
             <p class="text-body-md text-on-surface-variant flex items-center gap-base">
@@ -7,7 +7,7 @@
                 <span>All tokens are end-to-end encrypted</span>
             </p>
         </div>
-        <div class="flex items-center gap-sm">
+        <div class="flex items-center gap-xs">
             <button onclick="document.getElementById('import-modal').classList.remove('hidden')" class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Import">
                 <span class="material-symbols-outlined">upload</span>
             </button>
@@ -69,8 +69,8 @@
                                 } }}
                             </span>
                         </div>
-                        <div>
-                            <h3 class="text-[18px] leading-[24px] font-semibold text-on-surface">{{ $account->label }}</h3>
+                        <div class="min-w-0">
+                            <h3 class="text-[16px] sm:text-[18px] leading-[24px] font-semibold text-on-surface truncate">{{ $account->label }}</h3>
                             @if ($account->issuer)
                                 <p class="text-label-sm text-on-surface-variant">{{ $account->issuer }}</p>
                             @endif
@@ -87,8 +87,8 @@
                               id="timer-{{ $account->id }}">30</span>
                     </div>
                 </div>
-                <div class="flex items-center justify-between">
-                    <div class="font-mono text-otp-display text-on-surface tracking-widest code-display"
+                <div class="flex items-center justify-between gap-xs">
+                    <div class="font-mono text-[28px] sm:text-otp-display text-on-surface tracking-widest code-display"
                          id="code-{{ $account->id }}">{{ $codes[$account->id] ?? '------' }}</div>
                     <button aria-label="Copy code"
                             class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-low opacity-0 group-hover:opacity-100 focus:opacity-100">

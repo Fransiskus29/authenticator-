@@ -100,7 +100,7 @@
 
             <div class="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
                 {{-- Feature 1 --}}
-                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-lg hover:border-primary/30 transition-colors">
+                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-md sm:p-lg hover:border-primary/30 transition-colors">
                     <div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center mb-sm">
                         <span class="material-symbols-outlined text-on-primary-container text-[22px]">pin</span>
                     </div>
@@ -109,7 +109,7 @@
                 </div>
 
                 {{-- Feature 2 --}}
-                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-lg hover:border-primary/30 transition-colors">
+                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-md sm:p-lg hover:border-primary/30 transition-colors">
                     <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center mb-sm">
                         <span class="material-symbols-outlined text-on-secondary-container text-[22px]">search</span>
                     </div>
@@ -118,7 +118,7 @@
                 </div>
 
                 {{-- Feature 3 --}}
-                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-lg hover:border-primary/30 transition-colors">
+                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-md sm:p-lg hover:border-primary/30 transition-colors">
                     <div class="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center mb-sm">
                         <span class="material-symbols-outlined text-on-tertiary-container text-[22px]">lock</span>
                     </div>
@@ -127,7 +127,7 @@
                 </div>
 
                 {{-- Feature 4 --}}
-                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-lg hover:border-primary/30 transition-colors">
+                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-md sm:p-lg hover:border-primary/30 transition-colors">
                     <div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center mb-sm">
                         <span class="material-symbols-outlined text-on-primary-container text-[22px]">qr_code_scanner</span>
                     </div>
@@ -136,7 +136,7 @@
                 </div>
 
                 {{-- Feature 5 --}}
-                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-lg hover:border-primary/30 transition-colors">
+                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-md sm:p-lg hover:border-primary/30 transition-colors">
                     <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center mb-sm">
                         <span class="material-symbols-outlined text-on-secondary-container text-[22px]">download</span>
                     </div>
@@ -145,7 +145,7 @@
                 </div>
 
                 {{-- Feature 6 --}}
-                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-lg hover:border-primary/30 transition-colors">
+                <div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-md sm:p-lg hover:border-primary/30 transition-colors">
                     <div class="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center mb-sm">
                         <span class="material-symbols-outlined text-on-tertiary-container text-[22px]">phonelink_off</span>
                     </div>
@@ -194,7 +194,7 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-otp-display font-mono text-primary tracking-widest">482 901</p>
+                                <p class="text-[24px] sm:text-otp-display font-mono text-primary tracking-widest">482 901</p>
                                 <div class="w-24 h-1 bg-outline-variant rounded-full mt-1 ml-auto overflow-hidden">
                                     <div class="h-full bg-primary rounded-full" style="width: 65%"></div>
                                 </div>
@@ -209,7 +209,7 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-otp-display font-mono text-primary tracking-widest">739 254</p>
+                                <p class="text-[24px] sm:text-otp-display font-mono text-primary tracking-widest">739 254</p>
                                 <div class="w-24 h-1 bg-outline-variant rounded-full mt-1 ml-auto overflow-hidden">
                                     <div class="h-full bg-primary rounded-full" style="width: 40%"></div>
                                 </div>
@@ -224,7 +224,7 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-otp-display font-mono text-primary tracking-widest">516 083</p>
+                                <p class="text-[24px] sm:text-otp-display font-mono text-primary tracking-widest">516 083</p>
                                 <div class="w-24 h-1 bg-outline-variant rounded-full mt-1 ml-auto overflow-hidden">
                                     <div class="h-full bg-primary rounded-full" style="width: 85%"></div>
                                 </div>

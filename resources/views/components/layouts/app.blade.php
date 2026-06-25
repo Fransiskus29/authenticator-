@@ -68,15 +68,15 @@
     </aside>
 
     <div class="flex-1 flex flex-col md:ml-[280px] w-full min-h-screen">
-        <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] bg-surface border-b border-outline-variant flex justify-between items-center px-md z-10">
+        <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] bg-surface border-b border-outline-variant flex justify-between items-center px-sm sm:px-md z-10">
             <div class="flex items-center">
-                <button onclick="document.getElementById('mobile-sidebar').classList.toggle('hidden')" class="md:hidden mr-sm text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
+                <button onclick="document.getElementById('mobile-sidebar').classList.toggle('hidden')" class="md:hidden mr-xs text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
                 <h2 class="text-headline-md text-primary font-bold hidden md:block">Authenticator</h2>
                 <h2 class="text-headline-md text-primary font-bold md:hidden">SecureAuth</h2>
             </div>
-            <div class="flex items-center gap-xs">
+            <div class="flex items-center gap-1 sm:gap-xs">
                 <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
                     <span class="material-symbols-outlined">dark_mode</span>
                 </button>
@@ -84,16 +84,10 @@
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
                     <input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-label-sm text-on-surface focus:outline-none w-64 placeholder-on-surface-variant" placeholder="Search accounts..." type="text"/>
                 </div>
-                <button class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
-                    <span class="material-symbols-outlined">lock</span>
-                </button>
-                <button class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
+                <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors hidden sm:flex">
                     <span class="material-symbols-outlined">settings</span>
                 </a>
-                <div class="ml-sm pl-sm border-l border-outline-variant">
+                <div class="sm:ml-xs sm:pl-xs sm:border-l border-outline-variant">
                     <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary text-xs font-bold border border-outline-variant">
                         {{ $initial }}
                     </div>
@@ -141,7 +135,7 @@
             </aside>
         </div>
 
-        <main class="flex-1 mt-16 p-sm md:p-lg overflow-y-auto bg-surface-bright">
+        <main class="flex-1 mt-16 p-sm sm:p-md md:p-lg overflow-y-auto bg-surface-bright">
             <div class="max-w-container-max mx-auto">
                 {{ $slot }}
             </div>

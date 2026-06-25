@@ -16,14 +16,14 @@
 
             <p class="text-body-md text-on-surface-variant mb-md">Scan this QR code with your authenticator app or enter the secret key manually.</p>
 
-            <div class="flex flex-col md:flex-row gap-lg">
+            <div class="flex flex-col md:flex-row gap-lg items-center md:items-start">
                 {{-- QR Code --}}
                 <div class="flex-shrink-0">
-                    <div class="inline-block p-5 bg-surface-container-low border border-outline-variant rounded-xl">
+                    <div class="inline-block p-4 sm:p-5 bg-surface-container-low border border-outline-variant rounded-xl">
                         <img
                             src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=f8f9ff&color=0b1c30&data={{ urlencode($qrCodeUrl) }}"
                             alt="QR Code for {{ $account->label }}"
-                            class="block rounded-lg"
+                            class="block rounded-lg w-[180px] h-[180px] sm:w-[200px] sm:h-[200px]"
                         >
                     </div>
                 </div>
