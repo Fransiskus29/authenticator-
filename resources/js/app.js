@@ -19,6 +19,10 @@ function updateToggleIcon(isDark) {
     });
 }
 
+// ponytail: global scope for inline onclick handlers
+window.initTheme = initTheme;
+window.toggleTheme = toggleTheme;
+
 // Run immediately to prevent flash
 initTheme();
 
