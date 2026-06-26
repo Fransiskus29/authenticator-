@@ -49,7 +49,7 @@
                         <div class="w-11 h-11 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-center p-2 transition-transform duration-300 group-hover:scale-110
                             {{ match(($account->id % 6)) {
                                 0 => 'text-[#4285F4]',
-                                1 => 'text-[#181717]',
+                                1 => 'text-on-surface',
                                 2 => 'text-[#6e40c9]',
                                 3 => 'text-[#FF9900]',
                                 4 => 'text-[#ea4335]',
@@ -172,68 +172,88 @@
 
     <script>
         const accounts = @json($accounts->map(fn($a) => ['id' => $a->id, 'url' => route('two-factor.code', $a)]));
+        const timerState = {};
 
-        function refreshCode(account) {
-            fetch(account.url, {
+        // Initialize timer state for each account
+        accounts.forEach(a => {
+            timerState[a.id] = { remaining: 30, lastFetch: 0, code: '------', formatted: '--- ---' };
+        });
+
+        // Fetch from server only when a new 30s cycle begins
+        function fetchCode(account) {
+            return fetch(account.url, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
             .then(r => r.json())
             .then(data => {
-                const codeEl = document.getElementById('code-' + account.id);
-                const timerEl = document.getElementById('timer-' + account.id);
-                const ringEl = document.getElementById('ring-' + account.id);
-
-                if (codeEl) {
-                    const oldCode = codeEl.textContent.trim().replace(/\s/g, '');
-                    if (oldCode !== data.code) {
-                        codeEl.textContent = data.formatted;
-                        codeEl.classList.add('copy-flash');
-                        setTimeout(() => codeEl.classList.remove('copy-flash'), 400);
-                    }
-                }
-                if (timerEl) {
-                    timerEl.textContent = data.remaining.toString().padStart(2, '0');
-                }
-                if (ringEl) {
-                    const percent = (data.remaining / 30) * 100;
-                    const offset = 100 - percent;
-                    ringEl.style.strokeDashoffset = offset;
-
-                    if (data.remaining <= 7) {
-                        ringEl.classList.remove('stroke-secondary');
-                        ringEl.classList.add('stroke-error');
-                        timerEl.classList.remove('text-on-surface-variant');
-                        timerEl.classList.add('text-error');
-                        codeEl.classList.add('text-error', 'animate-pulse');
-                    } else {
-                        ringEl.classList.add('stroke-secondary');
-                        ringEl.classList.remove('stroke-error');
-                        timerEl.classList.add('text-on-surface-variant');
-                        timerEl.classList.remove('text-error');
-                        codeEl.classList.remove('text-error', 'animate-pulse');
-                    }
-                }
+                timerState[account.id].remaining = data.remaining;
+                timerState[account.id].code = data.code;
+                timerState[account.id].formatted = data.formatted;
+                timerState[account.id].lastFetch = Date.now();
+                return data;
             })
-            .catch(() => {});
+            .catch(() => null);
         }
 
-        function refreshAll() { accounts.forEach(a => refreshCode(a)); }
+        // Client-side countdown tick
+        function tickTimer(account) {
+            const state = timerState[account.id];
+            if (!state) return;
+
+            const elapsed = Math.floor((Date.now() - state.lastFetch) / 1000);
+            state.remaining = Math.max(0, 30 - (elapsed % 30));
+
+            const codeEl = document.getElementById('code-' + account.id);
+            const timerEl = document.getElementById('timer-' + account.id);
+            const ringEl = document.getElementById('ring-' + account.id);
+
+            if (timerEl) timerEl.textContent = state.remaining.toString().padStart(2, '0');
+            if (codeEl && codeEl.textContent.trim().replace(/\s/g, '') !== state.code) {
+                codeEl.textContent = state.formatted;
+                codeEl.classList.add('copy-flash');
+                setTimeout(() => codeEl.classList.remove('copy-flash'), 400);
+            }
+            if (ringEl) {
+                const percent = (state.remaining / 30) * 100;
+                ringEl.style.strokeDashoffset = 100 - percent;
+
+                if (state.remaining <= 7) {
+                    ringEl.classList.remove('stroke-secondary');
+                    ringEl.classList.add('stroke-error');
+                    if (timerEl) { timerEl.classList.remove('text-on-surface-variant'); timerEl.classList.add('text-error'); }
+                    if (codeEl) codeEl.classList.add('text-error', 'animate-pulse');
+                } else {
+                    ringEl.classList.add('stroke-secondary');
+                    ringEl.classList.remove('stroke-error');
+                    if (timerEl) { timerEl.classList.add('text-on-surface-variant'); timerEl.classList.remove('text-error'); }
+                    if (codeEl) codeEl.classList.remove('text-error', 'animate-pulse');
+                }
+            }
+
+            // Re-fetch when new 30s cycle starts
+            if (state.remaining >= 29) {
+                fetchCode(account);
+            }
+        }
+
+        // Initial fetch + start countdown
+        accounts.forEach(a => fetchCode(a));
+        setInterval(() => accounts.forEach(a => tickTimer(a)), 1000);
 
         function copyCode(accountId) {
-            const codeEl = document.getElementById('code-' + accountId);
-            if (codeEl) {
-                const code = codeEl.textContent.trim().replace(/\s/g, '');
-                navigator.clipboard.writeText(code).then(() => showToast('Code copied to clipboard!'))
-                .catch(() => {
-                    const ta = document.createElement('textarea');
-                    ta.value = code;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    showToast('Code copied to clipboard!');
-                });
-            }
+            const state = timerState[accountId];
+            if (!state) return;
+            const code = state.code;
+            navigator.clipboard.writeText(code).then(() => showToast('Code copied to clipboard!'))
+            .catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = code;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Code copied to clipboard!');
+            });
         }
 
         function closeDeleteModal() {
@@ -267,8 +287,6 @@
             .catch(() => showToast('Export failed'));
         }
 
-        refreshAll();
-        setInterval(refreshAll, 1000);
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 closeDeleteModal();

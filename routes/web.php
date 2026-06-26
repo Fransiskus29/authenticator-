@@ -1,14 +1,13 @@
 <?php
 
 use App\Http\Controllers\TwoFactorAccountController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
-
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
-
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
@@ -22,5 +21,14 @@ Route::middleware(['auth'])->prefix('authenticator')->name('two-factor.')->group
     Route::post('/export', [TwoFactorAccountController::class, 'export'])->name('export');
     Route::post('/import', [TwoFactorAccountController::class, 'import'])->name('import');
 });
+
+// Production migration route — run once after deploy
+Route::get('/run-migrations', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return response()->json([
+        'status' => 'ok',
+        'output' => Artisan::output(),
+    ]);
+})->middleware('auth');
 
 require __DIR__.'/auth.php';
