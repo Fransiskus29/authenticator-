@@ -60,6 +60,17 @@ class TwoFactorAccountController extends Controller
         if (!empty($secret)) {
             $secret = strtoupper(trim($secret));
             $secret = preg_replace('/\s+/', '', $secret);
+
+            // Validate Base32 (RFC 4648): A-Z, 2-7, =
+            if (!preg_match('/^[A-Z2-7]+=*$/', $secret)) {
+                return back()->withErrors(['secret' => 'Invalid secret key. Must be a valid Base32 string (A-Z, 2-7).']);
+            }
+
+            // Validate key length (16-64 bytes is standard for TOTP)
+            $decoded = $this->base32Decode($secret);
+            if (strlen($decoded) < 10 || strlen($decoded) > 64) {
+                return back()->withErrors(['secret' => 'Secret key length is invalid.']);
+            }
         } else {
             $secret = $this->google2fa->generateSecretKey();
         }
@@ -177,6 +188,9 @@ class TwoFactorAccountController extends Controller
                 $secret = strtoupper(trim($account['secret']));
                 $secret = preg_replace('/\s+/', '', $secret);
 
+                // Skip invalid Base32 secrets
+                if (!preg_match('/^[A-Z2-7]+=*$/', $secret)) continue;
+
                 auth()->user()->twoFactorAccounts()->create([
                     'label' => $account['label'],
                     'issuer' => $account['issuer'] ?? null,
@@ -194,6 +208,37 @@ class TwoFactorAccountController extends Controller
 
     private function getCurrentCode(string $secret): string
     {
-        return $this->google2fa->getCurrentOtp($secret);
+        try {
+            return $this->google2fa->getCurrentOtp($secret);
+        } catch (\Exception $e) {
+            return '------';
+        }
+    }
+
+    private function base32Decode(string $input): string
+    {
+        $map = [
+            'A' => 0,  'B' => 1,  'C' => 2,  'D' => 3,  'E' => 4,  'F' => 5,
+            'G' => 6,  'H' => 7,  'I' => 8,  'J' => 9,  'K' => 10, 'L' => 11,
+            'M' => 12, 'N' => 13, 'O' => 14, 'P' => 15, 'Q' => 16, 'R' => 17,
+            'S' => 18, 'T' => 19, 'U' => 20, 'V' => 21, 'W' => 22, 'X' => 23,
+            'Y' => 24, 'Z' => 25, '2' => 26, '3' => 27, '4' => 28, '5' => 29,
+            '6' => 30, '7' => 31,
+        ];
+        $input = rtrim($input, '=');
+        $buffer = 0;
+        $bitsLeft = 0;
+        $output = '';
+        for ($i = 0; $i < strlen($input); $i++) {
+            $val = $map[$input[$i]] ?? -1;
+            if ($val < 0) return '';
+            $buffer = ($buffer << 5) | $val;
+            $bitsLeft += 5;
+            if ($bitsLeft >= 8) {
+                $bitsLeft -= 8;
+                $output .= chr(($buffer >> $bitsLeft) & 0xFF);
+            }
+        }
+        return $output;
     }
 }
