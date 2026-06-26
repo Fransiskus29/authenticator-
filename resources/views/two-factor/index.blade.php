@@ -171,7 +171,7 @@
     </div>
 
     <script>
-        const accounts = @json($accounts->map(fn($a) => ['id' => $a->id, 'url' => route('two-factor.code', $a)]));
+        const accounts = @json($accounts->map(fn($a) => ['id' => $a->id, 'url' => '/authenticator/' . $a->id . '/code']));
         const timerState = {};
 
         // Initialize timer state
