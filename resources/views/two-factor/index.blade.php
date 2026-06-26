@@ -46,15 +46,12 @@
             {{-- Swipe container --}}
             <div class="swipe-container relative overflow-hidden rounded-2xl" data-account-id="{{ $account->id }}">
                 {{-- Archive action (revealed on swipe) --}}
-                <div class="absolute inset-0 flex items-center justify-end px-sm">
-                    <form action="{{ route('two-factor.destroy', $account) }}" method="POST" class="swipe-action">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="flex flex-col items-center justify-center gap-1 w-20 h-full rounded-2xl bg-error text-on-error">
-                            <span class="material-symbols-outlined text-[24px]">archive</span>
-                            <span class="text-[11px] font-medium">Archive</span>
-                        </button>
-                    </form>
+                <div class="absolute inset-0 flex items-center justify-end px-sm pointer-events-none">
+                    <button type="button" onclick="event.stopPropagation(); archiveAccount({{ $account->id }})"
+                            class="flex flex-col items-center justify-center gap-1 w-20 h-full rounded-2xl bg-error text-on-error pointer-events-auto btn-press">
+                        <span class="material-symbols-outlined text-[24px]">archive</span>
+                        <span class="text-[11px] font-medium">Archive</span>
+                    </button>
                 </div>
                 {{-- Card (swipeable) --}}
                 <div class="swipe-card bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-md card-hover glow-hover relative group cursor-pointer touch-pan-y"
@@ -365,22 +362,42 @@
             card.addEventListener('touchmove', () => clearTimeout(longPressTimer));
         });
 
+        function archiveAccount(accountId) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+            fetch('/authenticator/' + accountId, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            }).then(r => {
+                if (r.ok || r.redirected) {
+                    // Remove card with animation
+                    const container = document.querySelector('.swipe-container[data-account-id="' + accountId + '"]');
+                    if (container) {
+                        container.style.transition = 'opacity 0.3s, transform 0.3s';
+                        container.style.opacity = '0';
+                        container.style.transform = 'scale(0.95)';
+                        container.style.maxHeight = container.offsetHeight + 'px';
+                        setTimeout(() => {
+                            container.style.maxHeight = '0';
+                            container.style.padding = '0';
+                            container.style.margin = '0';
+                            container.style.overflow = 'hidden';
+                        }, 200);
+                        setTimeout(() => container.remove(), 500);
+                    }
+                    showToast('Account archived');
+                }
+            });
+        }
+
         function contextMenuAction(action) {
             if (!contextAccountId) return;
             if (action === 'copy') {
                 copyCode(parseInt(contextAccountId));
             } else if (action === 'archive') {
-                // Submit the archive form via fetch
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
-                fetch('/authenticator/' + contextAccountId, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                }).then(r => {
-                    if (r.redirected || r.ok) window.location.reload();
-                });
+                archiveAccount(contextAccountId);
             }
             hideContextMenu();
         }
