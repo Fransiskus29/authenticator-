@@ -19,8 +19,8 @@ Route::middleware(['auth'])->prefix('authenticator')->name('two-factor.')->group
     Route::post('/', [TwoFactorAccountController::class, 'store'])->name('store');
     Route::get('/{account}/code', [TwoFactorAccountController::class, 'getCode'])->name('code');
     Route::delete('/{account}', [TwoFactorAccountController::class, 'destroy'])->name('destroy');
-    Route::post('/{account}/restore', [TwoFactorAccountController::class, 'restore'])->name('restore');
-    Route::delete('/{account}/force-delete', [TwoFactorAccountController::class, 'forceDelete'])->name('force-delete');
+    Route::post('/{account}/restore', [TwoFactorAccountController::class, 'restore'])->name('restore')->withTrashed();
+    Route::delete('/{account}/force-delete', [TwoFactorAccountController::class, 'forceDelete'])->name('force-delete')->withTrashed();
     Route::post('/export', [TwoFactorAccountController::class, 'export'])->name('export');
     Route::post('/import', [TwoFactorAccountController::class, 'import'])->name('import');
 });
