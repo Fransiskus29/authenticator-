@@ -174,36 +174,13 @@
         const accounts = @json($accounts->map(fn($a) => ['id' => $a->id, 'url' => route('two-factor.code', $a)]));
         const timerState = {};
 
-        // Initialize timer state for each account
+        // Initialize timer state
         accounts.forEach(a => {
-            timerState[a.id] = { remaining: 30, lastFetch: 0, code: null, formatted: null, fetched: false };
+            timerState[a.id] = { remaining: 30, code: null, formatted: null, fetched: false };
         });
 
-        // Fetch from server only when a new 30s cycle begins
-        function fetchCode(account) {
-            return fetch(account.url, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            })
-            .then(r => r.json())
-            .then(data => {
-                timerState[account.id].remaining = data.remaining;
-                timerState[account.id].code = data.code;
-                timerState[account.id].formatted = data.formatted;
-                timerState[account.id].lastFetch = Date.now();
-                timerState[account.id].fetched = true;
-                return data;
-            })
-            .catch(() => null);
-        }
-
-        // Client-side countdown tick
-        function tickTimer(account) {
+        function updateDOM(account) {
             const state = timerState[account.id];
-            if (!state || !state.fetched) return; // wait for first fetch
-
-            const elapsed = Math.floor((Date.now() - state.lastFetch) / 1000);
-            state.remaining = Math.max(0, 30 - (elapsed % 30));
-
             const codeEl = document.getElementById('code-' + account.id);
             const timerEl = document.getElementById('timer-' + account.id);
             const ringEl = document.getElementById('ring-' + account.id);
@@ -217,29 +194,52 @@
             if (ringEl) {
                 const percent = (state.remaining / 30) * 100;
                 ringEl.style.strokeDashoffset = 100 - percent;
-
-                if (state.remaining <= 7) {
-                    ringEl.classList.remove('stroke-secondary');
-                    ringEl.classList.add('stroke-error');
-                    if (timerEl) { timerEl.classList.remove('text-on-surface-variant'); timerEl.classList.add('text-error'); }
-                    if (codeEl) codeEl.classList.add('text-error', 'animate-pulse');
-                } else {
-                    ringEl.classList.add('stroke-secondary');
-                    ringEl.classList.remove('stroke-error');
-                    if (timerEl) { timerEl.classList.add('text-on-surface-variant'); timerEl.classList.remove('text-error'); }
-                    if (codeEl) codeEl.classList.remove('text-error', 'animate-pulse');
+                const warn = state.remaining <= 7;
+                ringEl.classList.toggle('stroke-secondary', !warn);
+                ringEl.classList.toggle('stroke-error', warn);
+                if (timerEl) {
+                    timerEl.classList.toggle('text-on-surface-variant', !warn);
+                    timerEl.classList.toggle('text-error', warn);
                 }
-            }
-
-            // Re-fetch when new 30s cycle starts
-            if (state.remaining >= 29) {
-                fetchCode(account);
+                if (codeEl) {
+                    codeEl.classList.toggle('text-error', warn);
+                    codeEl.classList.toggle('animate-pulse', warn);
+                }
             }
         }
 
-        // Initial fetch + start countdown
-        accounts.forEach(a => fetchCode(a));
-        setInterval(() => accounts.forEach(a => tickTimer(a)), 1000);
+        function fetchAndStart(account) {
+            fetch(account.url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                const state = timerState[account.id];
+                state.remaining = data.remaining;
+                state.code = data.code;
+                state.formatted = data.formatted;
+                state.fetched = true;
+                updateDOM(account);
+            })
+            .catch(() => null);
+        }
+
+        // Tick: decrement every second, re-fetch at 0
+        setInterval(() => {
+            accounts.forEach(a => {
+                const state = timerState[a.id];
+                if (!state || !state.fetched) return;
+                state.remaining--;
+                if (state.remaining <= 0) {
+                    fetchAndStart(a); // new cycle
+                } else {
+                    updateDOM(a);
+                }
+            });
+        }, 1000);
+
+        // Initial fetch
+        accounts.forEach(a => fetchAndStart(a));
 
         function copyCode(accountId) {
             const state = timerState[accountId];
