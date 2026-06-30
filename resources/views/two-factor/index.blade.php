@@ -58,9 +58,7 @@
                 </div>
                 {{-- Card (swipeable) --}}
                 <div class="swipe-card bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-md card-hover glow-hover relative group cursor-pointer touch-pan-y"
-                     onclick="copyCode({{ $account->id }})"
-                     data-account-id="{{ $account->id }}"
-                     data-url="{{ route('two-factor.code', $account) }}">
+                     data-account-id="{{ $account->id }}">
                     <div class="flex justify-between items-start mb-md">
                         <div class="flex items-center gap-sm">
                             <div class="w-11 h-11 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-center p-2 transition-transform duration-300 group-hover:scale-110
@@ -106,7 +104,7 @@
                     </div>
                     <div class="flex items-center justify-between gap-xs">
                         <div class="font-mono text-[28px] sm:text-otp-display text-on-surface tracking-widest code-display transition-colors duration-300"
-                             id="code-{{ $account->id }}">{{ $codes[$account->id] ?? '------' }}</div>
+                             id="code-{{ $account->id }}">------</div>
                         <button aria-label="Copy code"
                                 class="text-on-surface-variant hover:text-primary transition-all duration-200 p-2 rounded-full hover:bg-surface-container-low opacity-0 group-hover:opacity-100 focus:opacity-100 hover:scale-110">
                             <span class="material-symbols-outlined text-[20px]">content_copy</span>
@@ -182,11 +180,11 @@
 
     <script>
         // === TOTP Timer ===
-        const accounts = @json($accounts->map(fn($a) => ['id' => $a->id, 'url' => '/authenticator/' . $a->id . '/code']));
+        const accountIds = @json($accountIds);
         const timerState = {};
 
-        accounts.forEach(a => {
-            timerState[a.id] = { remaining: 30, code: null, formatted: null, fetched: false };
+        accountIds.forEach(id => {
+            timerState[id] = { remaining: 30, code: null, formatted: null, fetched: false };
         });
 
         function updateDOM(account) {
@@ -219,7 +217,7 @@
         }
 
         function fetchAndStart(account) {
-            fetch(account.url, {
+            fetch('/authenticator/' + account.id + '/code', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
             .then(r => r.json())
@@ -235,19 +233,19 @@
         }
 
         setInterval(() => {
-            accounts.forEach(a => {
-                const state = timerState[a.id];
+            accountIds.forEach(id => {
+                const state = timerState[id];
                 if (!state || !state.fetched) return;
                 state.remaining--;
                 if (state.remaining <= 0) {
-                    fetchAndStart(a);
+                    fetchAndStart({id});
                 } else {
-                    updateDOM(a);
+                    updateDOM({id});
                 }
             });
         }, 1000);
 
-        accounts.forEach(a => fetchAndStart(a));
+        accountIds.forEach(id => fetchAndStart({id}));
 
         function copyCode(accountId) {
             const state = timerState[accountId];
@@ -365,42 +363,14 @@
             card.addEventListener('touchmove', () => clearTimeout(longPressTimer));
         });
 
-        function archiveAccount(accountId) {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
-            fetch('/authenticator/' + accountId, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            }).then(r => {
-                if (r.ok || r.redirected) {
-                    // Remove card with animation
-                    const container = document.querySelector('.swipe-container[data-account-id="' + accountId + '"]');
-                    if (container) {
-                        container.style.transition = 'opacity 0.3s, transform 0.3s';
-                        container.style.opacity = '0';
-                        container.style.transform = 'scale(0.95)';
-                        container.style.maxHeight = container.offsetHeight + 'px';
-                        setTimeout(() => {
-                            container.style.maxHeight = '0';
-                            container.style.padding = '0';
-                            container.style.margin = '0';
-                            container.style.overflow = 'hidden';
-                        }, 200);
-                        setTimeout(() => container.remove(), 500);
-                    }
-                    showToast('Account archived');
-                }
-            });
-        }
-
         function contextMenuAction(action) {
             if (!contextAccountId) return;
             if (action === 'copy') {
                 copyCode(parseInt(contextAccountId));
             } else if (action === 'archive') {
-                archiveAccount(contextAccountId);
+                // Submit the archive form for this account
+                const form = document.querySelector('.swipe-container[data-account-id="' + contextAccountId + '"] form');
+                if (form) form.requestSubmit();
             }
             hideContextMenu();
         }

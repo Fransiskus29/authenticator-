@@ -19,20 +19,19 @@ class TwoFactorAccountController extends Controller
 
     public function index(Request $request)
     {
-        $accounts = auth()->user()->twoFactorAccounts;
+        $query = auth()->user()->twoFactorAccounts();
 
         if ($search = $request->input('q')) {
-            $accounts = $accounts->filter(function ($account) use ($search) {
-                return str_contains(strtolower($account->label), strtolower($search))
-                    || str_contains(strtolower($account->issuer ?? ''), strtolower($search));
+            $query->where(function ($q) use ($search) {
+                $q->where('label', 'like', "%{$search}%")
+                  ->orWhere('issuer', 'like', "%{$search}%");
             });
         }
 
-        $codes = $accounts->mapWithKeys(function ($account) {
-            return [$account->id => $this->getCurrentCode($account->secret)];
-        });
+        $accounts = $query->get();
+        $accountIds = $accounts->pluck('id');
 
-        return view('two-factor.index', compact('accounts', 'codes'));
+        return view('two-factor.index', compact('accounts', 'accountIds'));
     }
 
     public function archived()
