@@ -45,13 +45,13 @@
     @if ($categories->isNotEmpty())
         <div class="flex flex-wrap gap-xs mb-md animate-fade-in-up" style="animation-delay: 0.15s;">
             <a href="{{ route('two-factor.index', ['q' => request('q')]) }}" wire:navigate
-               class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 {{ !request('category') ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container' }}">
+               class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 category-chip {{ !request('category') ? 'active' : '' }}">
                 All <span class="ml-0.5 opacity-70">{{ $accounts->count() }}</span>
             </a>
             @foreach ($categories as $cat)
                 <a href="{{ route('two-factor.index', ['category' => $cat->id, 'q' => request('q')]) }}" wire:navigate
-                   class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 {{ request('category') == $cat->id ? 'text-on-primary' : 'text-on-surface-variant hover:bg-surface-container' }}"
-                   style="background-color: {{ request('category') == $cat->id ? $cat->color : 'var(--surface-container-low, #f3f3f3)' }}; color: {{ request('category') == $cat->id ? 'white' : 'inherit' }};">
+                   class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 category-chip {{ request('category') == $cat->id ? 'active' : '' }}"
+                   style="--cat-color: {{ $cat->color }};">
                     {{ $cat->name }} <span class="ml-0.5 opacity-70">{{ $cat->accounts_count }}</span>
                 </a>
             @endforeach

@@ -206,13 +206,35 @@ html.theme-transition *::after {
         background-clip: text;
     }
 
-    /* Skeleton shimmer */
-    .shimmer {
-        background: linear-gradient(90deg, transparent 0%, rgba(var(--color-primary), 0.04) 50%, transparent 100%);
-        background-size: 200% 100%;
-        animation: shimmer 2s infinite;
+    /* ── Skeleton shimmer ── */
+        .shimmer {
+            background: linear-gradient(90deg, transparent 0%, rgba(var(--color-primary), 0.04) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        /* ── Category filter chips ── */
+        .category-chip {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+        .category-chip:not(.active) {
+            background-color: var(--surface-container-low);
+            color: var(--on-surface-variant);
+        }
+        .category-chip:not(.active):hover {
+            background-color: var(--surface-container);
+        }
+        .category-chip.active {
+            background-color: var(--cat-color);
+            color: white;
+            border-color: var(--cat-color);
+        }
+        .category-chip .opacity-70 {
+            opacity: 0.7;
+        }
     }
-}
 
 /* ── Progress ring ── */
 .progress-ring__circle {
