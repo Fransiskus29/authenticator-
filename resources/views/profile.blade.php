@@ -114,7 +114,7 @@
                 </ul>
             </div>
 
-            {{-- API Token for Browser Extension --}}
+            {{-- Browser Extension --}}
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/50 p-md">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-11 h-11 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
@@ -137,10 +137,16 @@
                             </button>
                         </div>
                     @else
-                        <button onclick="generateToken()" class="w-full px-4 py-2.5 text-primary text-label-sm font-label-sm hover:bg-primary-container/20 rounded-xl transition-all duration-200 text-left flex justify-between items-center btn-press">
-                            Generate Connection Token
-                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                        </button>
+                        <div class="space-y-2">
+                            <button onclick="generateToken()" class="w-full px-4 py-2.5 text-primary text-label-sm font-label-sm hover:bg-primary-container/20 rounded-xl transition-all duration-200 text-left flex justify-between items-center btn-press">
+                                Generate Connection Token
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </button>
+                            <a href="{{ route('extension.download') }}" class="w-full px-4 py-2.5 text-secondary text-label-sm font-label-sm hover:bg-secondary-container/20 rounded-xl transition-all duration-200 text-left flex justify-between items-center btn-press inline-flex items-center justify-center gap-xs">
+                                <span class="material-symbols-outlined text-[18px]">download</span>
+                                Download Extension (.zip)
+                            </a>
+                        </div>
                     @endif
                 </div>
             </div>

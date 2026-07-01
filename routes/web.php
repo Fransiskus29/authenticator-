@@ -4,6 +4,7 @@ use App\Http\Controllers\TwoFactorAccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Api\CodesController;
 use App\Http\Controllers\Api\TokenController;
+use App\Http\Controllers\ExtensionController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,11 @@ Route::middleware(['auth'])->prefix('authenticator')->name('two-factor.')->group
 // Public API (bearer token auth)
 Route::middleware('throttle:60,1')->prefix('api')->group(function () {
     Route::get('/codes', [CodesController::class, 'index'])->name('api.codes');
+});
+
+// Extension download (authenticated users only)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/extension/download', [ExtensionController::class, 'download'])->name('extension.download');
 });
 
 // Production migration route — run once after deploy.
